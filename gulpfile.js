@@ -11,7 +11,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 // Include Gulp & Tools We'll Use
 var gulp = require('gulp');
-var debug = require('gulp-debug');
 var $ = require('gulp-load-plugins')();
 var del = require('del');
 var runSequence = require('run-sequence');
@@ -43,9 +42,7 @@ var styleTask = function (stylesPath, srcs) {
     .pipe(gulp.dest('.tmp/' + stylesPath))
     .pipe($.if('*.css', $.cssmin()))
     .pipe(gulp.dest('dist/' + stylesPath))
-    .pipe(debug({title: 'unicorn:'}))
     .pipe($.size({title: stylesPath}));
-    
 };
 
 // Compile and Automatically Prefix Stylesheets
@@ -56,8 +53,6 @@ gulp.task('styles', function () {
 gulp.task('elements', function () {
   return styleTask('elements', ['**/*.css']);
 });
-
-
 
 // Lint JavaScript
 gulp.task('jshint', function () {
@@ -70,7 +65,6 @@ gulp.task('jshint', function () {
     .pipe($.jshint.extract()) // Extract JS from .html files
     .pipe($.jshint())
     .pipe($.jshint.reporter('jshint-stylish'))
-    .pipe(debug({title: 'unicorn:'}))
     .pipe($.if(!browserSync.active, $.jshint.reporter('fail')));
 });
 
@@ -82,7 +76,6 @@ gulp.task('images', function () {
       interlaced: true
     })))
     .pipe(gulp.dest('dist/images'))
-    .pipe(debug({title: 'unicorn:'}))
     .pipe($.size({title: 'images'}));
 });
 
@@ -94,40 +87,32 @@ gulp.task('copy', function () {
     '!app/precache.json'
   ], {
     dot: true
-  }).pipe(debug({title: 'unicorn:'}))
-  .pipe(gulp.dest('dist'));
+  }).pipe(gulp.dest('dist'));
 
   var bower = gulp.src([
     'bower_components/**/*'
-  ]).pipe(debug({title: 'unicorn:'}))
-  .pipe(gulp.dest('dist/bower_components'));
+  ]).pipe(gulp.dest('dist/bower_components'));
 
   var elements = gulp.src(['app/elements/**/*.html'])
-    .pipe(debug({title: 'unicorn:'}))
     .pipe(gulp.dest('dist/elements'));
 
   var swBootstrap = gulp.src(['bower_components/platinum-sw/bootstrap/*.js'])
-    .pipe(debug({title: 'unicorn:'}))
     .pipe(gulp.dest('dist/elements/bootstrap'));
 
   var swToolbox = gulp.src(['bower_components/sw-toolbox/*.js'])
-    .pipe(debug({title: 'unicorn:'}))
     .pipe(gulp.dest('dist/sw-toolbox'));
 
   var vulcanized = gulp.src(['app/elements/elements.html'])
     .pipe($.rename('elements.vulcanized.html'))
-    .pipe(debug({title: 'unicorn:'}))
     .pipe(gulp.dest('dist/elements'));
 
   return merge(app, bower, elements, vulcanized, swBootstrap, swToolbox)
-    .pipe(debug({title: 'unicorn:'}))
     .pipe($.size({title: 'copy'}));
 });
 
 // Copy Web Fonts To Dist
 gulp.task('fonts', function () {
   return gulp.src(['app/fonts/**'])
-    .pipe(debug({title: 'unicorn:'}))
     .pipe(gulp.dest('dist/fonts'))
     .pipe($.size({title: 'fonts'}));
 });
@@ -138,7 +123,6 @@ gulp.task('html', function () {
 
   return gulp.src(['app/**/*.html', '!app/{elements,test}/**/*.html'])
     // Replace path for vulcanized assets
-    .pipe(debug({title: 'unicorn:'}))
     .pipe($.if('*.html', $.replace('elements/elements.html', 'elements/elements.vulcanized.html')))
     .pipe(assets)
     // Concatenate And Minify JavaScript
@@ -170,7 +154,6 @@ gulp.task('vulcanize', function () {
       inlineCss: true,
       inlineScripts: true
     }))
-    .pipe(debug({title: 'unicorn:'}))
     .pipe(gulp.dest(DEST_DIR))
     .pipe($.size({title: 'vulcanize'}));
 });
